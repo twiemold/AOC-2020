@@ -34,9 +34,38 @@ fn find_sum(nums: Vec<u32>, target: u32) -> (u32, u32) {
     (0, 0)
 }
 
+fn find_three_sum(nums: &mut Vec<u32>, target: u32) -> Vec<Vec<u32>> {
+    let mut answers: Vec<Vec<u32>> = Vec::new();
+    nums.sort();
+
+    for (i, a) in nums.iter().enumerate() {
+        if i > 0 && a == &nums[i - 1] {
+            continue;
+        }
+
+        let mut left = i + 1;
+        let mut right = nums.len() - 1;
+        
+        while left < right {
+            let three_sum = a + nums[left] + nums[right];
+            if three_sum > target {
+                right = right - 1;
+            } else if three_sum < target {
+                left = left + 1;
+            } else {
+                answers.push(vec![*a, nums[left], nums[right]]);
+                return answers;
+            }
+        }
+    }
+
+    answers
+}
+
+
 fn main() {
-    let nums = read_file().unwrap();
-    let vals = find_sum(nums, 2020);
-    let answer = vals.0*vals.1;
+    let mut nums = read_file().unwrap();
+    let vals = find_three_sum(&mut nums, 2020);
+    let answer = vals[0][0]*vals[0][1]*vals[0][2];
     println!("The answer is {}", answer);
 }

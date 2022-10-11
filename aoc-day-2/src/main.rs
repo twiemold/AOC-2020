@@ -50,8 +50,9 @@ fn process_inputs(inputs: Vec<String>) -> Result<Vec<PasswordInput>, Box<dyn std
 fn count_valid(inputs: Vec<PasswordInput>) -> Result<u32, Box<dyn std::error::Error>> {
     let mut count: u32 = 0;
     for input in inputs {
-        let char_count: u8 = input.password.chars().filter(|letter| *letter == input.letter).count() as u8;
-        if char_count >= input.min && char_count <= input.max {
+        let char_one: bool = input.password.chars().nth((input.min-1) as usize).unwrap() == input.letter;
+        let char_two: bool = input.password.chars().nth((input.max-1) as usize).unwrap() == input.letter;
+        if char_one && !(char_two) || !(char_one) && char_two {
             count += 1;
         }
     }

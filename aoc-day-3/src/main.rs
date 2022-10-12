@@ -14,7 +14,7 @@ fn read_file() -> Result<Vec<String>, Box<dyn std::error::Error>> {
     Ok(inputs)
 }
 
-fn count_trees(map: Vec<String>) -> u32 {
+fn count_trees(map: &Vec<String>, rise: usize, run: usize) -> u64 {
     let mut x = 0;
     let mut y = 0;
     let mut tree_count = 0;
@@ -25,8 +25,8 @@ fn count_trees(map: Vec<String>) -> u32 {
         if mark == '#' {
             tree_count += 1;
         }
-        x = (x + 3) % width;
-        y += 1;
+        x = (x + run) % width;
+        y += rise;
     }
 
     tree_count
@@ -34,7 +34,14 @@ fn count_trees(map: Vec<String>) -> u32 {
 
 fn main() {
     let map = read_file().unwrap();
-    let tree_count = count_trees(map);
+    let test_slopes: Vec<(usize,usize)> = 
+        vec![(1,1), (1,3), (1,5), (1,7), (2,1)];
+    let tree_multi: u64 = test_slopes.iter()
+        .map(|pair| count_trees(&map, pair.0, pair.1))
+        .product();
+    // for pair in test_slopes {
+    //     tree_mutli *= count_trees(&map, pair.0, pair.1);
+    // }
 
-    println!("The tree count is {}", tree_count);
+    println!("The tree value is {}", tree_multi);
 }

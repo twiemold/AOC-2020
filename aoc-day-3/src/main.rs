@@ -39,9 +39,6 @@ fn main() {
     let tree_multi: u64 = test_slopes.iter()
         .map(|pair| count_trees(&map, pair.0, pair.1))
         .product();
-    // for pair in test_slopes {
-    //     tree_mutli *= count_trees(&map, pair.0, pair.1);
-    // }
 
     println!("The tree value is {}", tree_multi);
 }

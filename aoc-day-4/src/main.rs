@@ -1,4 +1,5 @@
 use std::fs::{read_to_string};
+use regex::Regex;
 
 pub struct Passport {
     byr: Option<u16>,
@@ -42,20 +43,72 @@ fn process_input(input: String) -> Result<Vec<Passport>, Box<dyn std::error::Err
             let field = &line[0..3];
             let data = &line[4..];
             passport_vals.push((field, data));
-            // let caps = re.captures(line).unwrap();
-            // let field = caps.name("field").unwrap().as_str();
-            // let value = caps.name("value").unwrap().as_str();
-            // println!("Field: {}, Value: {}", field, value);
         }
         for pair in passport_vals {
             match pair.0 {
-                "byr" => temp_passport.byr = Some(pair.1.parse().unwrap()),
-                "iyr" => temp_passport.iyr = Some(pair.1.parse().unwrap()),
-                "eyr" => temp_passport.eyr = Some(pair.1.parse().unwrap()),
-                "hgt" => temp_passport.hgt = Some(pair.1.to_string()),
-                "hcl" => temp_passport.hcl = Some(pair.1.to_string()),
-                "ecl" => temp_passport.ecl = Some(pair.1.to_string()),
-                "pid" => temp_passport.pid = Some(pair.1.to_string()),
+                "byr" => {
+                    let data = pair.1.parse().unwrap();
+                    if data >= 1920 && data <= 2002 {
+                        temp_passport.byr = Some(data);
+                    }
+                },
+                "iyr" => {
+                    let data = pair.1.parse().unwrap();
+                    if data >= 2010 && data <= 2020 {
+                        temp_passport.iyr = Some(data);
+                    }
+                },
+                "eyr" => {
+                    let data = pair.1.parse().unwrap();
+                    if data >= 2020 && data <= 2030 {
+                        temp_passport.eyr = Some(data);
+                    }
+                },
+                "hgt" => {
+                    let len = pair.1.len();
+                    let unit = &pair.1[(len-1)-1..];
+                    if unit == "cm" {
+                        let data: u16 = pair.1[..(len-1)-1].parse().unwrap();
+                        if data >= 150 && data <= 193 {
+                            temp_passport.hgt = Some(pair.1.to_string());
+                        }
+                    } else if unit == "in" {
+                        let data: u16 = pair.1[..(len-1)-1].parse().unwrap();
+                        if data >= 59 && data <= 76 {
+                            temp_passport.hgt = Some(pair.1.to_string());
+                        }
+                    }
+                }, 
+                "hcl" => {
+                    let re = Regex::new(r"#[a-z,0-9]{6}").unwrap();
+                    let cap = re.captures(pair.1);
+                    match cap {
+                        Some(val) => temp_passport.hcl = Some(val.get(0).unwrap().as_str().to_string()),
+                        None => (),
+                    }
+                },
+                "ecl" => {
+                    let data = pair.1;
+                    match data {
+                        "amb" => temp_passport.ecl = Some(pair.1.to_string()),
+                        "blu" => temp_passport.ecl = Some(pair.1.to_string()),
+                        "brn" => temp_passport.ecl = Some(pair.1.to_string()),
+                        "gry" => temp_passport.ecl = Some(pair.1.to_string()),
+                        "grn" => temp_passport.ecl = Some(pair.1.to_string()),
+                        "hzl" => temp_passport.ecl = Some(pair.1.to_string()),
+                        "oth" => temp_passport.ecl = Some(pair.1.to_string()),
+                        _ => (),
+                    }
+                },
+                "pid" => {
+                    let re = Regex::new(r"^[0-9]{9}$").unwrap();
+                    let cap = re.captures(pair.1);
+                    match cap {
+                        Some(val) => temp_passport.pid = Some(val.get(0).unwrap().as_str().to_string()),
+                        None => (),
+                    }
+                },
+
                 "cid" => temp_passport.cid = Some(pair.1.parse().unwrap()),
                 _other => panic!("Bad data"),
             };

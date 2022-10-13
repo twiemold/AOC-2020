@@ -67,9 +67,27 @@ fn process_input(input: String) -> Result<Vec<Passport>, Box<dyn std::error::Err
     Ok(passport_vec)
 }
 
+fn count_valid(passports: Vec<Passport>) -> u32 {
+    let mut count = 0;
 
+    for passport in passports {
+        if passport.byr.is_some() &&
+            passport.iyr.is_some() &&
+            passport.eyr.is_some() &&
+            passport.hgt.is_some() &&
+            passport.hcl.is_some() &&
+            passport.ecl.is_some() &&
+            passport.pid.is_some() {
+                count += 1
+        }
+    }
+    count
+}
 
 fn main() {
     let data = read_file("src/input.txt").unwrap();
     let passports = process_input(data).unwrap();
+    let valid = count_valid(passports);
+
+    println!("The number of valid passports is {}", valid);
 }

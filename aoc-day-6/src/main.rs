@@ -14,16 +14,17 @@ fn process_data(data: String) -> Vec<String> {
 }
 
 fn sum_questions(groups: Vec<String>) -> u32 {
-    let mut key_count = 0;
+    let mut key_count = 1;
     for group in groups {
+        let head_count = group.chars().filter(|letter| *letter == '\n').count() + 1;
         let mut sub_count: u32 = 0;
         let mut group_hash = HashMap::new();
         let _val = group
             .chars()
             .filter(|letter| *letter != '\n')
-            .map(|letter| *group_hash.entry(letter).or_insert(1) += 1)
+            .map(|letter| *group_hash.entry(letter).or_insert(0) += 1)
             .count();
-        sub_count += group_hash.keys().count() as u32;
+        sub_count += group_hash.keys().filter(|key| group_hash[key] == head_count).count() as u32;
         key_count += sub_count;
     }
 
